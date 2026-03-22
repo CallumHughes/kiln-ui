@@ -58,25 +58,26 @@
     $stored_logs = $stored_logs;
   });
 
-  let pollInterval: ReturnType<typeof setInterval>;
+  let pollTimeout: ReturnType<typeof setTimeout>;
 
-  onMount(() => {
-    pollInterval = setInterval(async () => {
-      try {
-        const res = await fetch(import.meta.env.VITE_KILN_URL + "kiln/state");
-        lastStatusCode = res.status;
-        if (res.ok) {
-          connectionStatus = 'connected';
-          $current_state = await res.json();
-        }
-      } catch (e) {
-        connectionStatus = 'error';
-        lastStatusCode = null;
+  async function poll() {
+    try {
+      const res = await fetch(import.meta.env.VITE_KILN_URL + "kiln/state");
+      lastStatusCode = res.status;
+      if (res.ok) {
+        connectionStatus = 'connected';
+        $current_state = await res.json();
       }
-    }, 1000);
-  });
+    } catch (e) {
+      connectionStatus = 'error';
+      lastStatusCode = null;
+    }
+    pollTimeout = setTimeout(poll, 1000);
+  }
 
-  onDestroy(() => clearInterval(pollInterval));
+  onMount(() => poll());
+
+  onDestroy(() => clearTimeout(pollTimeout));
 </script>
 
 <main style="height: 100vh">
