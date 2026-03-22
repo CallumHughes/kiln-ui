@@ -32,8 +32,8 @@
 
   // TODO: almost the same as redraw in Schedules, refactor
   function redraw() {
-    if($current_state.runtime) {  // skip when undefined
-      let x: Array<number> = [Date.now()/1000 - $current_state.runtime];  // timestamps
+    if($current_state.running && $current_state.started_at > 0) {
+      let x: Array<number> = [$current_state.started_at];  // timestamps
       let y: Array<number> = [$current_state.start_temperature];  // temperature
       for (let step of $current_state.schedule.steps) {
         // previous timestamp plus time to reach target in seconds (also don't break when dividing by zero)
@@ -118,8 +118,12 @@ tbody {
       </Tooltip>
       <span class="h2">{$current_state.schedule.name}</span><br>
 
-      {@const SvelteComponent = uPlot}
-      <SvelteComponent {data}/>
+      {#if $current_state.started_at > 0}
+        {@const SvelteComponent = uPlot}
+        <SvelteComponent {data}/>
+      {:else}
+        <p class="text-muted">Graph unavailable — NTP had not synced when this schedule started.</p>
+      {/if}
 
       Current temperature: {Math.round($current_state.temperature)}<br>
 

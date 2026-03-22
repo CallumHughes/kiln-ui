@@ -35,8 +35,9 @@ export const stored_logs = writable<Array<RecordConfig>>([]);
 
 // current kiln state
 export interface KilnState {
+  running: boolean;
   step: number;
-  runtime: number;
+  started_at: number;
   start_temperature: number;
   temperature: number;
   schedule: {

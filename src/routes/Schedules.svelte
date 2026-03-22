@@ -9,7 +9,7 @@
   let new_schedule_name: string = $state("");
   let schedule_name_modal_open: boolean = $state(false);
   let schedule_name_model_action: string = "";
-  let schedule_name_input: HTMLInputElement;
+  let schedule_name_input: HTMLInputElement = $state();
 
   $effect(() => {
     if (schedule_name_modal_open) {
