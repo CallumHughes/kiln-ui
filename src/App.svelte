@@ -59,20 +59,25 @@
   });
 
   let pollTimeout: ReturnType<typeof setTimeout>;
+  let etag: string | null = null;
 
   async function poll() {
     try {
-      const res = await fetch(import.meta.env.VITE_KILN_URL + "kiln/state");
+      const headers: Record<string, string> = etag ? { 'If-None-Match': etag } : {};
+      const res = await fetch(import.meta.env.VITE_KILN_URL + "kiln/state", { headers });
       lastStatusCode = res.status;
-      if (res.ok) {
+      if (res.status === 304) {
         connectionStatus = 'connected';
+      } else if (res.ok) {
+        connectionStatus = 'connected';
+        etag = res.headers.get('ETag');
         $current_state = await res.json();
       }
     } catch (e) {
       connectionStatus = 'error';
       lastStatusCode = null;
     }
-    pollTimeout = setTimeout(poll, 1000);
+    pollTimeout = setTimeout(poll, 5000);
   }
 
   onMount(() => poll());
