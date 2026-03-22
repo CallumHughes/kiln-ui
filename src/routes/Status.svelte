@@ -19,8 +19,8 @@
   let stop_modal_open = $state(false);
   const toggleStopModalOpen = () => (stop_modal_open = !stop_modal_open);
   async function stopSchedule() {
-    const response = await fetch(import.meta.env.VITE_KILN_URL + "kiln/schedule", {
-      method: 'DELETE',
+    const response = await fetch(import.meta.env.VITE_KILN_URL + "kiln/schedule/cancel", {
+      method: 'POST',
       headers: {'Content-Type': 'application/json'}
     });
     toggleStopModalOpen();
