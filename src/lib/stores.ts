@@ -40,6 +40,7 @@ export interface KilnState {
   started_at: number;
   start_temperature: number;
   temperature: number;
+  target_temperature: number;
   schedule: {
     name: string,
     steps: Schedule

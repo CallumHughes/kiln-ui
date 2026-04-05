@@ -120,7 +120,14 @@ tbody {
 
       {#if $current_state.started_at > 0}
         {@const SvelteComponent = uPlot}
-        <SvelteComponent {data}/>
+        <SvelteComponent
+          {data}
+          progressMarker={{
+            x: Date.now() / 1000,
+            y: $current_state.target_temperature,
+            active: $current_state.running,
+          }}
+        />
       {:else}
         <p class="text-muted">Graph unavailable — NTP had not synced when this schedule started.</p>
       {/if}
