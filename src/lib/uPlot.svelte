@@ -5,19 +5,25 @@
   import 'uplot/dist/uPlot.min.css';
 	import uPlot, { type AlignedData } from 'uplot';
 
-  interface Props {
-    data: AlignedData | undefined;
+  interface ProgressMarker {
+    x: number;
+    y: number;
+    active: boolean;
   }
 
-  let { data }: Props = $props();
+  interface Props {
+    data: AlignedData | undefined;
+    progressMarker?: ProgressMarker;
+  }
+
+  let { data, progressMarker }: Props = $props();
 
   let targ: HTMLElement = $state();
-  let plot: uPlot = $state();
 
 	run(() => {
 		if (targ) {
       targ.innerHTML = "";  // force the graph to be redrawn and not append and keep the old one
-      plot = new uPlot({
+      new uPlot({
         width: targ.offsetWidth,
         height: 400,
         series: [
@@ -40,7 +46,33 @@
           {
             stroke: window.getComputedStyle(targ).getPropertyValue("color")
           }
-        ]
+        ],
+        hooks: {
+          draw: [
+            (u: uPlot) => {
+              if (!progressMarker) return;
+              const ctx = u.ctx;
+              // valToPos with true returns absolute canvas pixel coordinates
+              const cx = u.valToPos(progressMarker.x, 'x', true);
+              const cy = u.valToPos(progressMarker.y, 'y', true);
+              const r = 6 * devicePixelRatio;
+
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(cx, cy, r, 0, Math.PI * 2);
+              ctx.fillStyle = progressMarker.active ? 'limegreen' : 'grey';
+              ctx.fill();
+              if (progressMarker.active) {
+                ctx.shadowColor = 'limegreen';
+                ctx.shadowBlur = 12 * devicePixelRatio;
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.fill();
+              }
+              ctx.restore();
+            }
+          ]
+        }
       }, data, targ);
     }
   });

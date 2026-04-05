@@ -62,9 +62,14 @@
   let etag: string | null = null;
 
   async function poll() {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
     try {
       const headers: Record<string, string> = etag ? { 'If-None-Match': etag } : {};
-      const res = await fetch(import.meta.env.VITE_KILN_URL + "kiln/state", { headers });
+      const res = await fetch(import.meta.env.VITE_KILN_URL + "kiln/state", {
+        headers,
+        signal: controller.signal,
+      });
       lastStatusCode = res.status;
       if (res.status === 304) {
         connectionStatus = 'connected';
@@ -76,6 +81,8 @@
     } catch (e) {
       connectionStatus = 'error';
       lastStatusCode = null;
+    } finally {
+      clearTimeout(timeout);
     }
     pollTimeout = setTimeout(poll, 5000);
   }
