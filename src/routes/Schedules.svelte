@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { stored_schedules } from "../lib/stores";
+  import { stored_schedules, current_state } from "../lib/stores";
 	import uPlot from "../lib/uPlot.svelte";
   import { Input, Table, Button, Icon, Modal, Row, Col, Tooltip } from '@sveltestrap/sveltestrap';
 
@@ -100,12 +100,14 @@
 
   // uplot
   let data: [number[], number[]] = $state();
+  let total_time_label: string = $state("");
 
   // TODO: almost the same as redraw in Status, refactor
   function redraw() {
     if(selected_schedule) {
+      const start_temp = $current_state.temperature > 0 ? Math.round($current_state.temperature) : 0;
       let x: Array<number> = [Date.now()/1000];
-      let y: Array<number> = [0];
+      let y: Array<number> = [start_temp];
       for (let step of $stored_schedules[selected_schedule]) {
         // ramp, target, hold
         if(step[0] || step[1] || step[2]) {
@@ -118,6 +120,11 @@
         }
       }
       data = [x, y];
+
+      const total_seconds = x.at(-1) - x[0];
+      const hours = Math.floor(total_seconds / 3600);
+      const minutes = Math.round((total_seconds % 3600) / 60);
+      total_time_label = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
     }
   }
   // Redraw graph when dependencies change
@@ -226,6 +233,7 @@
 
   {@const SvelteComponent = uPlot}
   <SvelteComponent {data}/>
+  Total firing time: {total_time_label}<br>
 
   <Table class="mt-4">
     <thead>
