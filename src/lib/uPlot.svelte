@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
+  import { onDestroy } from 'svelte';
 
   // https://github.com/leeoniya/uPlot/issues/556#issuecomment-1271653615
   import 'uplot/dist/uPlot.min.css';
@@ -19,11 +19,28 @@
   let { data, progressMarker }: Props = $props();
 
   let targ: HTMLElement = $state();
+  let plot: uPlot | undefined;
 
-	run(() => {
+  $effect(() => {
+    if (!targ) return;
+    const observer = new ResizeObserver(() => {
+      if (plot && targ) {
+        plot.setSize({ width: targ.offsetWidth, height: 400 });
+      }
+    });
+    observer.observe(targ);
+    return () => observer.disconnect();
+  });
+
+  onDestroy(() => {
+    plot?.destroy();
+  });
+
+	$effect(() => {
 		if (targ) {
+      plot?.destroy();
       targ.innerHTML = "";  // force the graph to be redrawn and not append and keep the old one
-      new uPlot({
+      plot = new uPlot({
         width: targ.offsetWidth,
         height: 400,
         series: [
@@ -60,10 +77,10 @@
               ctx.save();
               ctx.beginPath();
               ctx.arc(cx, cy, r, 0, Math.PI * 2);
-              ctx.fillStyle = progressMarker.active ? 'limegreen' : 'grey';
+              ctx.fillStyle = progressMarker.active ? 'green' : 'grey';
               ctx.fill();
               if (progressMarker.active) {
-                ctx.shadowColor = 'limegreen';
+                ctx.shadowColor = 'green';
                 ctx.shadowBlur = 12 * devicePixelRatio;
                 ctx.beginPath();
                 ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -76,12 +93,6 @@
       }, data, targ);
     }
   });
-  // window.addEventListener("resize", e => {
-  //   plot.setSize({
-  //     width: targ.offsetWidth - 100,
-  //     height: targ.offsetHeight - 200,
-  //   });
-  // });
 
 </script>
 
