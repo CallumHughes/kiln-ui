@@ -51,6 +51,19 @@
 </script>
 
 <style lang=css>
+.logs-container {
+  @media (min-width: 768px) {
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  & thead {
+    position: sticky;
+    top: 0;
+    background: var(--bs-body-bg);
+  }
+}
+
 tbody {
   line-height: 1;
   font-size: 0.8rem;
@@ -80,7 +93,7 @@ tbody {
 </style>
 
 <Row>
-  <Col>
+  <Col md="6">
     <div class="ps-2">
     <Modal body header="Confirm stop schedule" isOpen={stop_modal_open} toggle={toggleStopModalOpen}>
       Are you sure you want to stop the running <code>{$current_state.schedule.name}</code> schedule on the kiln?
@@ -164,7 +177,8 @@ tbody {
     {/if}
   </div>
   </Col>
-  <Col>
+  <Col md="6">
+    <div class="logs-container">
     <Table borderless size="sm">
       <thead>
         <tr>
@@ -185,5 +199,6 @@ tbody {
       {/each}
       </tbody>
     </Table>
+    </div>
   </Col>
 </Row>

@@ -92,7 +92,8 @@
   onDestroy(() => clearTimeout(pollTimeout));
 </script>
 
-<main style="height: 100vh">
+<!-- margin to prevent page content getting hidden the footer-->
+<main style="height: 100%; margin-bottom: 40px;">
   <Styles theme='auto' />
   <Navbar class="mb-4" color="primary-subtle" expand="md">
     <NavbarBrand href="/">Kiln Controller</NavbarBrand>

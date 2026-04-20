@@ -124,7 +124,8 @@
       const total_seconds = x.at(-1) - x[0];
       const hours = Math.floor(total_seconds / 3600);
       const minutes = Math.round((total_seconds % 3600) / 60);
-      total_time_label = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+      const time = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+      total_time_label = $current_state.temperature > 0 ? `${time} (from current temperature)` : time;
     }
   }
   // Redraw graph when dependencies change
@@ -233,7 +234,7 @@
 
   {@const SvelteComponent = uPlot}
   <SvelteComponent {data}/>
-  Total firing time: {total_time_label}<br>
+  <span class="ps-2">Total firing time: {total_time_label}</span><br>
 
   <Table class="mt-4">
     <thead>
