@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { stored_logs, current_state } from "../lib/stores";
+  import { stored_logs, current_state, connection_status } from "../lib/stores";
 	import uPlot from "../lib/uPlot.svelte";
   import {
       Icon,
@@ -122,8 +122,11 @@ tbody {
       </form>
     </Modal>
 
-    {#if Object.keys($current_state).length === 0}
-      <span class="h2">Loading the Kiln data...</span><br>
+    {#if $connection_status.status === 'error'}
+      <span class="h2">Connection error</span><br>
+      <span class="text-muted">Could not reach the kiln at {import.meta.env.VITE_KILN_URL}</span>
+    {:else if Object.keys($current_state).length === 0}
+      <span class="h2">Connecting...</span><br>
     {:else if $current_state.schedule.name !== ""}
       <Button id="btn-stop-schedule" class="float-end me-1" color="danger" on:click={() => toggleStopModalOpen()}><Icon name="stop" /></Button>
       <Tooltip target="btn-stop-schedule" placement="bottom">
@@ -172,7 +175,7 @@ tbody {
       <Tooltip target="btn-upload-firmware" placement="bottom">
         Upload firmware
       </Tooltip>
-      <span class="h2">No schedule running</span><br>
+      <span class="h2">{$connection_status.status === 'error' ? 'Connection error' : 'No schedule running'}</span><br>
       Current temperature: {Math.round($current_state.temperature)}<br>
     {/if}
   </div>

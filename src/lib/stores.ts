@@ -47,3 +47,9 @@ export interface KilnState {
   };
 }
 export const current_state = writable<KilnState>(JSON.parse('{}'));
+
+export type ConnectionStatus = 'pending' | 'connected' | 'error';
+export const connection_status = writable<{ status: ConnectionStatus; lastStatusCode: number | null }>({
+  status: 'pending',
+  lastStatusCode: null,
+});
