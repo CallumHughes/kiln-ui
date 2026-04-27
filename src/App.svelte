@@ -4,7 +4,7 @@
   import {link} from 'svelte-spa-router';
   import active from 'svelte-spa-router/active'
   import routes from './routes';
-  import { stored_logs, current_state, type RecordConfig} from "./lib/stores";
+  import { stored_logs, current_state, connection_status, type RecordConfig} from "./lib/stores";
 
   import {
     Icon,
@@ -18,15 +18,11 @@
     NavLink
   } from '@sveltestrap/sveltestrap';
 
-  // TODO: update to false, should toggle but doesnt work?
-  let isOpen: boolean = $state(true);
-  function handleUpdate(event) {
-    isOpen = event.detail.isOpen;
+  let isOpen: boolean = $state(false);
+  function handleUpdate(event: CustomEvent<boolean>) {
+    isOpen = event.detail;
   }
 
-  type ConnectionStatus = 'pending' | 'connected' | 'error';
-  let connectionStatus: ConnectionStatus = $state('pending');
-  let lastStatusCode: number | null = $state(null);
 
   // start gathering logs
   // stock esphome
@@ -68,19 +64,23 @@
       const headers: Record<string, string> = etag ? { 'If-None-Match': etag } : {};
       const res = await fetch(import.meta.env.VITE_KILN_URL + "kiln/state", {
         headers,
+        cache: 'no-store',
         signal: controller.signal,
       });
-      lastStatusCode = res.status;
-      if (res.status === 304) {
-        connectionStatus = 'connected';
+      if (res.status === 304 && Object.keys($current_state).length === 0) {
+        // stale ETag with no data yet — reset and let next poll fetch fresh
+        etag = null;
+      } else if (res.status === 304) {
+        connection_status.set({ status: 'connected', lastStatusCode: res.status });
       } else if (res.ok) {
-        connectionStatus = 'connected';
+        connection_status.set({ status: 'connected', lastStatusCode: res.status });
         etag = res.headers.get('ETag');
         $current_state = await res.json();
+      } else {
+        connection_status.set({ status: 'error', lastStatusCode: res.status });
       }
     } catch (e) {
-      connectionStatus = 'error';
-      lastStatusCode = null;
+      connection_status.set({ status: 'error', lastStatusCode: null });
     } finally {
       clearTimeout(timeout);
     }
@@ -95,26 +95,31 @@
 <!-- margin to prevent page content getting hidden the footer-->
 <main style="height: 100%; margin-bottom: 40px;">
   <Styles theme='auto' />
-  <Navbar class="mb-4" color="primary-subtle" expand="md">
+  {#snippet navItems()}
+    <NavItem>
+      <a href="/" class="nav-link" use:link use:active={'/'}>Schedules</a>
+    </NavItem>
+    <NavItem>
+      <a href="/status" class="nav-link" use:link use:active={'/status'}>Status</a>
+    </NavItem>
+    <NavItem>
+      <NavLink href="https://github.com/kiln-controller"><Icon name="github" /></NavLink>
+    </NavItem>
+  {/snippet}
+
+  <Navbar class="mb-4" color="primary-subtle">
     <NavbarBrand href="/">Kiln Controller</NavbarBrand>
-    <NavbarToggler on:click={() => (isOpen = !isOpen)} />
-    <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
-      <Nav class="ms-auto" navbar>
-        <NavItem>
-          <!-- use plain href to utilize use:active from spa-router -->
-          <a href="/" class="nav-link" use:link use:active={'/'}>Schedules</a>
-        </NavItem>
-        <NavItem>
-          <a href="/status" class="nav-link" use:link use:active={'/status'}>Status</a>
-        </NavItem>
-        <NavItem>
-          <NavLink href="https://github.com/kiln-controller"><Icon name="github" /></NavLink>
-        </NavItem>
-        <NavItem title="API: {import.meta.env.VITE_KILN_URL}kiln/state{lastStatusCode ? ' (HTTP ' + lastStatusCode + ')' : ''}">
-          <span class="nav-link">
-            <Icon name="circle-fill" class={connectionStatus === 'connected' ? 'text-success' : connectionStatus === 'error' ? 'text-danger' : 'text-secondary'} />
-          </span>
-        </NavItem>
+
+    <!-- desktop: always visible -->
+    <Nav class="ms-auto d-none d-md-flex flex-row gap-2" navbar>
+      {@render navItems()}
+    </Nav>
+
+    <!-- mobile: toggler + collapse -->
+    <NavbarToggler class="d-md-none" on:click={() => (isOpen = !isOpen)} />
+    <Collapse {isOpen} navbar on:update={handleUpdate} class="d-md-none">
+      <Nav navbar>
+        {@render navItems()}
       </Nav>
     </Collapse>
   </Navbar>
