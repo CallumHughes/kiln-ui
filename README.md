@@ -52,8 +52,10 @@ VITE_KILN_URL=http://<device-ip>/ npm run build
 That needs the device to answer CORS preflights, so it wants ESPHome >= 2026.7
 on the device (earlier builds can't return a 204).
 
-`scripts/check-dist.sh` asserts both halves of this contract and runs in CI
-before the upload.
+`scripts/check-dist.sh` asserts both halves of this contract. It is wired up as
+an npm `postbuild` script, so it runs after every `npm run build` — locally and
+anywhere else the build runs — and fails the build rather than leaving a broken
+bundle to be copied out.
 
 ## Demo
 

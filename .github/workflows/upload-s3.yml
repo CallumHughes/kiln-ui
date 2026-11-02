@@ -16,8 +16,6 @@ jobs:
           node-version: '24.x'
       - run: npm ci
       - run: npm run build --if-present
-      - name: Check dist matches the device's css_url / js_url contract
-        run: ./scripts/check-dist.sh
       - name: Upload to S3
         uses: jakejarvis/s3-sync-action@master
         with:
