@@ -1,8 +1,7 @@
 <script lang="ts">
   import { stored_schedules, current_state } from "../lib/stores";
-  import { tooltip } from "../lib/tooltip";
 	import uPlot from "../lib/uPlot.svelte";
-  import { Input, Table, Button, Icon, Modal, Row, Col } from '@sveltestrap/sveltestrap';
+  import { Input, Table, Button, Icon, Modal, Row, Col, Tooltip } from '@sveltestrap/sveltestrap';
 
   let selected_schedule: string = $state("");
 
@@ -140,9 +139,12 @@
       <option value={name}>{name}</option>
     {/each}
   </Input>
-  <Button color="success" on:click={() => toggleScheduleNameModalOpen("add")} {@attach tooltip('Create')}
+  <Button id="btn-create" color="success" on:click={() => toggleScheduleNameModalOpen("add")}
     ><Icon name="plus-lg" /></Button
   >
+  <Tooltip target="btn-create" placement="bottom">
+    Create
+  </Tooltip>
 </div>
 
 <Modal
@@ -170,31 +172,43 @@
 {#if selected_schedule}
   <span class="h2 ps-2">{selected_schedule}</span>
   <Button
+    id="btn-delete"
     class="float-end me-2"
     color="danger"
     on:click={() => deleteSchedule(selected_schedule)}
-    {@attach tooltip('Delete')}
     ><Icon name="trash" /></Button
   >
+  <Tooltip target="btn-delete" placement="bottom">
+    Delete
+  </Tooltip>
   <Button
+    id="btn-edit"
     class="float-end me-1"
     on:click={() => toggleScheduleNameModalOpen("move")}
-    {@attach tooltip('Change name')}
     ><Icon name="pencil" /></Button
   >
+  <Tooltip target="btn-edit" placement="bottom">
+    Change name
+  </Tooltip>
   <!--copy icon seems missing in sveltestrap -->
   <Button
+    id="btn-copy"
     class="float-end me-1"
     on:click={() => toggleScheduleNameModalOpen("copy")}
-    {@attach tooltip('Copy')}
     ><Icon name="subtract" /></Button
   >
+  <Tooltip target="btn-copy" placement="bottom">
+    Copy
+  </Tooltip>
   <Button
+    id="btn-upload"
     class="float-end me-1"
     color="warning"
-    on:click={() => toggleUploadModalOpen()}
-    {@attach tooltip('Upload')}><Icon name="upload" /></Button
+    on:click={() => toggleUploadModalOpen()}><Icon name="upload" /></Button
   >
+  <Tooltip target="btn-upload" placement="bottom">
+    Upload
+  </Tooltip>
 
   <Modal
     body
@@ -250,9 +264,12 @@
       {/each}
       <tr>
         <td colspan="5"
-          ><Button block outline on:click={() => addStep()} {@attach tooltip('New step')}
+          ><Button block outline id="btn-add-step" on:click={() => addStep()}
             ><Icon name="plus-lg" /></Button
           >
+          <Tooltip target="btn-add-step" placement="bottom">
+            New step
+          </Tooltip>
         </td
         >
       </tr>
