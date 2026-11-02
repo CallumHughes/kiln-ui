@@ -22,12 +22,16 @@ export default defineConfig(({ mode }) => {
   },
   build: {
     sourcemap: true,
+    // Emit at the output root, not assets/, so the files line up with the
+    // css_url / js_url the device is configured with (http://<host>/index.css
+    // and /index.js). ESPHome builds its own page and loads those two by URL.
+    assetsDir: '',
     // https://github.com/vitejs/vite/issues/378#issuecomment-768816653
     rollupOptions: {
       output: {
-        entryFileNames: `assets/[name].js`,
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
+        entryFileNames: `[name].js`,
+        chunkFileNames: `[name].js`,
+        assetFileNames: `[name].[ext]`
       }
     }
   }
