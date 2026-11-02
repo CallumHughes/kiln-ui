@@ -1,5 +1,6 @@
 <script lang="ts">
   import { stored_schedules, current_state } from "../lib/stores";
+  import { can_hover } from "../lib/hover";
 	import uPlot from "../lib/uPlot.svelte";
   import { Input, Table, Button, Icon, Modal, Row, Col, Tooltip } from '@sveltestrap/sveltestrap';
 
@@ -142,9 +143,11 @@
   <Button id="btn-create" color="success" on:click={() => toggleScheduleNameModalOpen("add")}
     ><Icon name="plus-lg" /></Button
   >
-  <Tooltip target="btn-create" placement="bottom">
-    Create
-  </Tooltip>
+  {#if can_hover}
+    <Tooltip target="btn-create" placement="bottom">
+      Create
+    </Tooltip>
+  {/if}
 </div>
 
 <Modal
@@ -178,18 +181,22 @@
     on:click={() => deleteSchedule(selected_schedule)}
     ><Icon name="trash" /></Button
   >
-  <Tooltip target="btn-delete" placement="bottom">
-    Delete
-  </Tooltip>
+  {#if can_hover}
+    <Tooltip target="btn-delete" placement="bottom">
+      Delete
+    </Tooltip>
+  {/if}
   <Button
     id="btn-edit"
     class="float-end me-1"
     on:click={() => toggleScheduleNameModalOpen("move")}
     ><Icon name="pencil" /></Button
   >
-  <Tooltip target="btn-edit" placement="bottom">
-    Change name
-  </Tooltip>
+  {#if can_hover}
+    <Tooltip target="btn-edit" placement="bottom">
+      Change name
+    </Tooltip>
+  {/if}
   <!--copy icon seems missing in sveltestrap -->
   <Button
     id="btn-copy"
@@ -197,18 +204,22 @@
     on:click={() => toggleScheduleNameModalOpen("copy")}
     ><Icon name="subtract" /></Button
   >
-  <Tooltip target="btn-copy" placement="bottom">
-    Copy
-  </Tooltip>
+  {#if can_hover}
+    <Tooltip target="btn-copy" placement="bottom">
+      Copy
+    </Tooltip>
+  {/if}
   <Button
     id="btn-upload"
     class="float-end me-1"
     color="warning"
     on:click={() => toggleUploadModalOpen()}><Icon name="upload" /></Button
   >
-  <Tooltip target="btn-upload" placement="bottom">
-    Upload
-  </Tooltip>
+  {#if can_hover}
+    <Tooltip target="btn-upload" placement="bottom">
+      Upload
+    </Tooltip>
+  {/if}
 
   <Modal
     body
@@ -267,9 +278,11 @@
           ><Button block outline id="btn-add-step" on:click={() => addStep()}
             ><Icon name="plus-lg" /></Button
           >
-          <Tooltip target="btn-add-step" placement="bottom">
-            New step
-          </Tooltip>
+          {#if can_hover}
+            <Tooltip target="btn-add-step" placement="bottom">
+              New step
+            </Tooltip>
+          {/if}
         </td
         >
       </tr>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { stored_logs, current_state, connection_status } from "../lib/stores";
+  import { can_hover } from "../lib/hover";
 	import uPlot from "../lib/uPlot.svelte";
   import {
       Icon,
@@ -124,14 +125,15 @@ tbody {
 
     {#if $connection_status.status === 'error'}
       <span class="h2">Connection error</span><br>
-      <span class="text-muted">Could not reach the kiln at {import.meta.env.VITE_KILN_URL}</span>
     {:else if Object.keys($current_state).length === 0}
       <span class="h2">Connecting...</span><br>
     {:else if $current_state.schedule.name !== ""}
       <Button id="btn-stop-schedule" class="float-end me-1" color="danger" on:click={() => toggleStopModalOpen()}><Icon name="stop" /></Button>
-      <Tooltip target="btn-stop-schedule" placement="bottom">
-        Stop schedule
-      </Tooltip>
+      {#if can_hover}
+        <Tooltip target="btn-stop-schedule" placement="bottom">
+          Stop schedule
+        </Tooltip>
+      {/if}
       <span class="h2">{$current_state.schedule.name}</span><br>
 
       {#if $current_state.started_at > 0}
@@ -172,9 +174,11 @@ tbody {
       </Table>
     {:else}
       <Button id="btn-upload-firmware" class="float-end me-1" color="warning" on:click={() => toggleUploadModalOpen()}><Icon name="wrench" /></Button>
-      <Tooltip target="btn-upload-firmware" placement="bottom">
-        Upload firmware
-      </Tooltip>
+      {#if can_hover}
+        <Tooltip target="btn-upload-firmware" placement="bottom">
+          Upload firmware
+        </Tooltip>
+      {/if}
       <span class="h2">{$connection_status.status === 'error' ? 'Connection error' : 'No schedule running'}</span><br>
       Current temperature: {Math.round($current_state.temperature)}<br>
     {/if}
