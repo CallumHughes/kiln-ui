@@ -1,6 +1,6 @@
 <script lang="ts">
   import { stored_logs, current_state, connection_status } from "../lib/stores";
-  import { can_hover } from "../lib/hover";
+  import { tooltip } from "../lib/tooltip";
 	import uPlot from "../lib/uPlot.svelte";
   import {
       Icon,
@@ -10,7 +10,6 @@
       Modal,
       Table,
       Input,
-      Tooltip
   } from '@sveltestrap/sveltestrap';
 
   let upload_modal_open = $state(false);
@@ -128,12 +127,7 @@ tbody {
     {:else if Object.keys($current_state).length === 0}
       <span class="h2">Connecting...</span><br>
     {:else if $current_state.schedule.name !== ""}
-      <Button id="btn-stop-schedule" class="float-end me-1" color="danger" on:click={() => toggleStopModalOpen()}><Icon name="stop" /></Button>
-      {#if can_hover}
-        <Tooltip target="btn-stop-schedule" placement="bottom">
-          Stop schedule
-        </Tooltip>
-      {/if}
+      <Button class="float-end me-1" color="danger" on:click={() => toggleStopModalOpen()} {@attach tooltip('Stop schedule')}><Icon name="stop" /></Button>
       <span class="h2">{$current_state.schedule.name}</span><br>
 
       {#if $current_state.started_at > 0}
@@ -173,12 +167,7 @@ tbody {
         </tbody>
       </Table>
     {:else}
-      <Button id="btn-upload-firmware" class="float-end me-1" color="warning" on:click={() => toggleUploadModalOpen()}><Icon name="wrench" /></Button>
-      {#if can_hover}
-        <Tooltip target="btn-upload-firmware" placement="bottom">
-          Upload firmware
-        </Tooltip>
-      {/if}
+      <Button class="float-end me-1" color="warning" on:click={() => toggleUploadModalOpen()} {@attach tooltip('Upload firmware')}><Icon name="wrench" /></Button>
       <span class="h2">{$connection_status.status === 'error' ? 'Connection error' : 'No schedule running'}</span><br>
       Current temperature: {Math.round($current_state.temperature)}<br>
     {/if}
