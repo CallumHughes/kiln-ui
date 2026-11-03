@@ -1,5 +1,6 @@
 import { mount } from 'svelte';
 import App from './App.svelte'
+import { suppress_emulated_hover } from './lib/emulated-hover';
 
 // ESPHome's build_index_html emits no viewport meta at all — it is absent from
 // the v2/v3 index page regardless of css_url/js_url (only the v1 server sets
@@ -10,6 +11,9 @@ const meta = document.createElement('meta');
 meta.name = 'viewport';
 meta.content = 'width=device-width, initial-scale=1.0';
 document.head.prepend(meta);
+
+// Registered before mount so the guard is in place for the first tap.
+suppress_emulated_hover();
 
 const app = mount(App, {
   target: document.getElementsByTagName('esp-app').item(0),

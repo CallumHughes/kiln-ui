@@ -146,6 +146,10 @@
     labels, not controls.
 
     `:global` because the bubble is portalled outside this component.
+
+    This covers a tap that does reach the button. The other way iOS eats a tap —
+    treating it as a hover because the bubble appeared at all, and dispatching no
+    click — is handled in src/lib/emulated-hover.ts.
   */
   :global(.tooltip) {
     pointer-events: none;
