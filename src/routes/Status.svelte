@@ -124,7 +124,6 @@ tbody {
 
     {#if $connection_status.status === 'error'}
       <span class="h2">Connection error</span><br>
-      <span class="text-muted">Could not reach the kiln at {import.meta.env.VITE_KILN_URL}</span>
     {:else if Object.keys($current_state).length === 0}
       <span class="h2">Connecting...</span><br>
     {:else if $current_state.schedule.name !== ""}

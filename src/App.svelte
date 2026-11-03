@@ -132,3 +132,26 @@
     kilny.nl
   </div>
 </footer>
+<style>
+  /*
+    A tooltip is portalled to <body> at z-index 1080 and, with placement
+    "bottom", Popper sits it flush against the button's lower edge. Bootstrap's
+    own `.tooltip` rule sets no `pointer-events`, so that bubble is a live
+    hit-target covering the spot a finger has just landed on: the tap that
+    opened the tooltip lands on the tooltip instead of the button, and the
+    button reads as dead. It is geometry, so it bites on one phone and not
+    another depending on screen size and where on the button you tap.
+
+    Tooltips never want pointer events in the first place — they are hover
+    labels, not controls.
+
+    `:global` because the bubble is portalled outside this component.
+
+    This covers a tap that does reach the button. The other way iOS eats a tap —
+    treating it as a hover because the bubble appeared at all, and dispatching no
+    click — is handled in src/lib/emulated-hover.ts.
+  */
+  :global(.tooltip) {
+    pointer-events: none;
+  }
+</style>
